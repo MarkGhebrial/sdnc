@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+serenity = "0.12.4"
+tera = "1.20.0"
+tokio = { version = "1.47.1", features = ["rt-multi-thread"] }
