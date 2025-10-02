@@ -1,21 +1,24 @@
+use axum::{
+    Form, Router,
+    response::{IntoResponse, Redirect, Response},
+    routing::{get, post},
+};
+
+use tower_http::services::ServeDir;
+
+use serde::Deserialize;
+
 use std::env;
 
-use serenity::all::{Guild, Shard};
-use serenity::async_trait;
-use serenity::model::channel::Message;
+use serenity::all::GuildId;
 use serenity::prelude::*;
 
-const GUILD_ID: u64 = 1224949123141210173;
+mod recaptcha_verify;
+use recaptcha_verify::*;
 
-struct Handler;
+use crate::config::CONFIG;
 
-async fn generate_invite(client: Client) {
-    let guild = serenity::model::id::GuildId::new(GUILD_ID);
-
-    // guild.invites(client.http).await.unwrap()
-
-    todo!();
-}
+mod config;
 
 #[tokio::main]
 async fn main() {
@@ -23,21 +26,53 @@ async fn main() {
     let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
 
     // Set gateway intents, which decides what events the bot will be notified about
-    let intents = GatewayIntents::GUILD_SCHEDULED_EVENTS | GatewayIntents::GUILD_INVITES;
+    let discord_intents = GatewayIntents::GUILD_SCHEDULED_EVENTS | GatewayIntents::GUILD_INVITES;
+    let discord_client = Client::builder(&token, discord_intents).await.unwrap();
 
-    let client_builder = Client::builder(&token, intents);
+    let router = Router::new()
+        .route("/api/get_events", get(|| async { "Hello, World!" }))
+        .route("/api/generate_invite", post(generate_invite))
+        .fallback_service(ServeDir::new("/home/markg/Documents/Code/sdnc/www/public"));
 
-    // let application_id = client_builder.get_application_id().unwrap();
-    // application_id
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    println!("Listening on port 3000");
+    axum::serve(listener, router).await.unwrap();
+}
 
-    let client = client_builder.await.unwrap();
+#[derive(Deserialize)]
+struct InviteForm {
+    #[serde(rename = "g-recaptcha-response")]
+    g_recaptcha_response: String,
+}
 
-    let guild = serenity::model::id::GuildId::new(GUILD_ID);
+async fn generate_invite(Form(invite_form): Form<InviteForm>) -> Response {
+    println!(
+        "Recaptcha response token: {}",
+        invite_form.g_recaptcha_response
+    );
 
-    // let server_name = guild.name(client.cache).unwrap();
-    // println!("Server name is '{server_name}'");
+    match recaptcha_verify(&invite_form.g_recaptcha_response).await {
+        Err(_) | Ok(false) => "Invalid captcha".into_response(),
+        Ok(true) => {
+            println!("Captcha passed");
 
-    let events = guild.scheduled_events(client.http, true).await.unwrap();
+            Redirect::to("https://google.com").into_response()
+        }
+    }
+
+    // recaptcha_verify(&invite_form.g_recaptcha_response).await.unwrap_or_else(|_| {
+    //     return "Invalid captcha".into_response();
+    // });
+
+    // Redirect::to("https://google.com").into_response()
+}
+
+async fn get_events(client: &Client) -> String {
+    let guild = GuildId::new(CONFIG.discord.guild_id);
+    let events = guild
+        .scheduled_events(client.http.clone(), true)
+        .await
+        .unwrap();
 
     for event in events {
         println!("Event name: {}", event.name);
@@ -49,7 +84,7 @@ async fn main() {
         // println!("{event:?}");
     }
 
-    // client.
+    "<p>this is a test</p>".to_string()
 }
 
 struct EventDetails {

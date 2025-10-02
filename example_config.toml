@@ -1,0 +1,17 @@
+[discord]
+# The private discord api token.
+bot_token = "PUT DISCORD TOKEN HERE"
+
+# The id of the discord server. This should be a large integer
+guild_id = 12345678901234567890
+
+[google]
+# The recaptcha site key. This should be the same as the one used on the application
+# frontend.
+recaptcha_site_key = "PUT RECAPTCHA SITE KEY HERE"
+
+# The private google api key.
+google_api_key = "PUT GOOGLE API KEY HERE"
+
+# The name of the google cloud project.
+google_cloud_project_name = "PUT PROJECT NAME HERE"

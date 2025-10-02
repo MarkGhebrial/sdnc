@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <title>reCAPTCHA demo: Simple page</title>
+    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
+  </head>
+  <body>
+    <form action="/api/generate_invite" method="POST">
+      <div class="g-recaptcha" data-sitekey="6LfHz84rAAAAAHZUBIebDx-M2AEyDP2n_oERaLvI" data-action="invite"></div>
+      <br/>
+      <input type="submit" value="Submit">
+    </form>
+  </body>
+</html>

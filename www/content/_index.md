@@ -44,7 +44,7 @@ The LUNC facebook group is the best way to keep track of their events.
 ## Small Group Nerf War
 
 SGNW is a small club that plays monthly at a park in Lakewood. They typically play
-4v4, 5v5, and 6v6 semi-competetive game modes depending on attendance.
+4v4, 5v5, and 6v6 semi-competitive game modes depending on attendance.
 
 
 
