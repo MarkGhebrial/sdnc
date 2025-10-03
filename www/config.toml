@@ -16,3 +16,8 @@ highlight_code = false
 
 [extra]
 # Put all your custom variables here
+header_links = [
+    { name = "Events", url = "/events" },
+    { name = "Rules", url = "/rules" },
+    { name = "Other Clubs", url = "/#other-clubs" },
+]
