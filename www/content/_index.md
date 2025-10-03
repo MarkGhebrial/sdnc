@@ -2,18 +2,6 @@
 template = "index.html"
 +++
 
-# Heading 1
-
-## Heading 2
-
-### Heading 3
-
-#### Heading 4
-
-##### Heading 5
-
-###### Heading 6
-
 # About Us
 
 San Diego Nerf Club.
@@ -31,6 +19,8 @@ the club and our events, visit our discord server.
 We are most active on our Discord server. You can join by clicking [here](/discord).
 
 We also have a Facebook group, but it's an ancient relic that's no longer active.
+
+---
 
 <div id="other-clubs"></div>
 
