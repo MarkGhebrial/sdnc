@@ -32,6 +32,8 @@ We are most active on our Discord server. You can join by clicking [here](/disco
 
 We also have a Facebook group, but it's an ancient relic that's no longer active.
 
+<div id="other-clubs"></div>
+
 # Other SoCal Nerf Clubs
 
 ## Lazy Uncles' Nerf Club
