@@ -22,8 +22,7 @@ Below is a list of the places we host games:
   Island games require full face eye protection due to the venue's insurance policy.
   Jungle Island games have a 220 fps cap.
 - **Huntington Beach Sports Complex** has outdoor fields with artificial turf that
-  we occasionally rent for larger competitive games. We play at the sports complex
-  when practicing for tournaments such as CFT and MFT
+  we occasionally use for larger competitive games.
 
 
 # Social Media
@@ -32,14 +31,19 @@ We are most active on our Discord server. You can join by clicking [here](/join)
 
 We also have a Facebook group, but it's an ancient relic that's no longer active.
 
+
 # Gameplay Footage
 
 Below is a list of YouTube channels where our members post recordings of their gameplay:
 - [Red Tide Team](https://youtube.com/@RedTideTeam)
-- [Zoomed Out Tahova](https://www.youtube.com/@Zoomed_Out_Tahova)
 - [h81](https://www.youtube.com/@h81_sdnc)
-- [Pki](https://www.youtube.com/@NOTdeathtree)
+- [Zoomed Out Tahova](https://www.youtube.com/@Zoomed_Out_Tahova)
 - [spacedoge14](https://www.youtube.com/@spacedoge14)
+- [MichaelAtMatterHackers](https://www.youtube.com/@MichaelAtMatterhackers)
+- [Pki](https://www.youtube.com/@NOTdeathtree)
+- [SilverSquidMods](https://www.youtube.com/@SilverSquidMods)
+- [Jared Carpenter](https://www.youtube.com/@afterburn819)
+- [Kevin's Nerf War Videos](https://www.youtube.com/@KevinNerfs)
 - [Beret](https://www.youtube.com/@beretnarf) used to post videos from SDNC games
   when he lived in SoCal.
 
