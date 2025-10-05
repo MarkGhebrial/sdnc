@@ -1,8 +1,12 @@
 use axum::{
-    extract::State, response::{IntoResponse, Redirect}, routing::{get, post}, Form, Json, Router
+    extract::State, response::{Html, IntoResponse, Redirect}, routing::{get, post}, Form, Router
 };
 
 use tower_http::services::ServeDir;
+
+use tera::Tera;
+
+use lazy_static::lazy_static;
 
 use serde::{Deserialize, Serialize};
 
@@ -17,6 +21,15 @@ use recaptcha_verify::*;
 use crate::config::CONFIG;
 
 mod config;
+
+lazy_static! {
+    /// Initialize the templating engine
+    pub static ref TERA: Tera = {
+        let mut tera = Tera::default();
+        tera.add_raw_template("event_grid", include_str!("templates/event_grid.html")).unwrap();
+        tera
+    };
+}
 
 /// Things that route handlers need access to.
 #[derive(Clone)]
@@ -46,12 +59,15 @@ async fn main() {
     axum::serve(listener, router).await.unwrap();
 }
 
+/// Form data for /api/generate_invite endpoint
 #[derive(Deserialize)]
 struct InviteForm {
     #[serde(rename = "g-recaptcha-response")]
     g_recaptcha_response: String,
 }
 
+/// Handler for /api/generate_invite endpoint. Verifies reCAPTCHA token and redirects
+/// to a new discord invite link if the token is valid.
 async fn generate_invite(
     State(state): State<AppState>,
     Form(invite_form): Form<InviteForm>,
@@ -78,18 +94,34 @@ async fn generate_invite(
             CreateInvite::new().max_age(60).max_uses(1),
         )
         .await
-        .unwrap();
+        .unwrap(); // TODO: Handle this unwrap gracefully
 
     // Redirect directly to the new invite link
     Redirect::to(&invite.url()).into_response()
 }
 
-async fn get_events(State(state): State<AppState>) -> Json<Vec<EventDetails>> {
+/// Struct for "event_grid" template data
+#[derive(Serialize)]
+struct EventDetails {
+    name: String,
+    start_time: (),
+    end_time: (),
+    description: Option<String>,
+    location: Option<String>,
+    rsvps: u64,
+
+    /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
+    discord_link: String,
+}
+
+/// Handler for /api/get_events route. Fetches list of events from Discord guild
+/// and fills them into an html template.
+async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
     let guild = GuildId::new(CONFIG.discord.guild_id);
     let events = guild
         .scheduled_events(&state.discord_client.http, true)
         .await
-        .unwrap();
+        .unwrap(); // TODO: Handle this unwrap gracefully
 
     let events: Vec<EventDetails> = events
         .into_iter()
@@ -104,19 +136,16 @@ async fn get_events(State(state): State<AppState>) -> Json<Vec<EventDetails>> {
         })
         .collect();
 
-    axum::Json(events)
+    // Uncomment this to return Json instead
+    // axum::Json(events)
+
+    let mut context = tera::Context::new();
+    context.insert("events", &events);
+
+    // This unwrap should not panic if there are no bugs in the template.
+    let body = TERA.render("event_grid", &context).unwrap();
+
+    // Return the output of the template as HTML content type
+    Html(body)
 }
 
-/// API schema for `get_events` endpoint
-#[derive(Serialize)]
-struct EventDetails {
-    name: String,
-    start_time: (),
-    end_time: (),
-    description: Option<String>,
-    location: Option<String>,
-    rsvps: u64,
-
-    /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
-    discord_link: String,
-}
