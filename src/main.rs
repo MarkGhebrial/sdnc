@@ -1,16 +1,14 @@
 use axum::{
-    Form, Router,
-    response::{IntoResponse, Redirect, Response},
-    routing::{get, post},
+    extract::State, response::{IntoResponse, Redirect, Response}, routing::{get, post}, Form, Json, Router
 };
 
 use tower_http::services::ServeDir;
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
-use std::env;
+use std::{pin::Pin, sync::Arc};
 
-use serenity::all::GuildId;
+use serenity::all::{ChannelId, GuildId};
 use serenity::prelude::*;
 
 mod recaptcha_verify;
@@ -20,19 +18,28 @@ use crate::config::CONFIG;
 
 mod config;
 
+/// Things that route handlers need access to.
+#[derive(Clone)]
+struct AppState {
+    discord_client: Arc<Client>,
+}
+
 #[tokio::main]
 async fn main() {
-    // Login with a bot token from the environment
-    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
+    let discord_intents = GatewayIntents::GUILD_SCHEDULED_EVENTS;
+    let discord_client = Client::builder(&CONFIG.discord.bot_token, discord_intents)
+        .await
+        .unwrap();
 
-    // Set gateway intents, which decides what events the bot will be notified about
-    let discord_intents = GatewayIntents::GUILD_SCHEDULED_EVENTS | GatewayIntents::GUILD_INVITES;
-    let discord_client = Client::builder(&token, discord_intents).await.unwrap();
+    let state = AppState {
+        discord_client: Arc::new(discord_client),
+    };
 
     let router = Router::new()
-        .route("/api/get_events", get(|| async { "Hello, World!" }))
+        .route("/api/get_events", get(get(get_events)))
         .route("/api/generate_invite", post(generate_invite))
-        .fallback_service(ServeDir::new("/home/markg/Documents/Code/sdnc/www/public"));
+        .fallback_service(ServeDir::new("/home/markg/Documents/Code/sdnc/www/public"))
+        .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Listening on port 3000");
@@ -45,7 +52,10 @@ struct InviteForm {
     g_recaptcha_response: String,
 }
 
-async fn generate_invite(Form(invite_form): Form<InviteForm>) -> Response {
+async fn generate_invite(
+    State(state): State<AppState>,
+    Form(invite_form): Form<InviteForm>,
+) -> impl IntoResponse {
     println!(
         "Recaptcha response token: {}",
         invite_form.g_recaptcha_response
@@ -54,43 +64,59 @@ async fn generate_invite(Form(invite_form): Form<InviteForm>) -> Response {
     match recaptcha_verify(&invite_form.g_recaptcha_response).await {
         Err(_) | Ok(false) => "Invalid captcha".into_response(),
         Ok(true) => {
-            println!("Captcha passed");
+            println!("Captcha passed. Generating invite...");
 
+            // Generate a single use discord invite
+            let channel = ChannelId::new(CONFIG.discord.channel_id);
+
+            // let invite = channel
+            //     .create_invite(
+            //         &state.discord_client.http,
+            //         CreateInvite::new().max_age(60).max_uses(1),
+            //     )
+            //     .await
+            //     .unwrap();
+
+            // Redirect directly to the new invite link
+            // Redirect::to(&invite.url()).into_response()
             Redirect::to("https://google.com").into_response()
         }
     }
-
-    // recaptcha_verify(&invite_form.g_recaptcha_response).await.unwrap_or_else(|_| {
-    //     return "Invalid captcha".into_response();
-    // });
-
-    // Redirect::to("https://google.com").into_response()
 }
 
-async fn get_events(client: &Client) -> String {
+async fn get_events(State(state): State<AppState>) -> Json<Vec<EventDetails>> {
     let guild = GuildId::new(CONFIG.discord.guild_id);
     let events = guild
-        .scheduled_events(client.http.clone(), true)
+        .scheduled_events(&state.discord_client.http, true)
         .await
         .unwrap();
 
-    for event in events {
-        println!("Event name: {}", event.name);
-        println!("Event time: {} - {:?}", event.start_time, event.end_time);
-        println!("Event location: {:?}", event.metadata.unwrap().location);
-        println!("Number of RSVPs: {:?}", event.user_count);
+    let events: Vec<EventDetails> = events
+        .into_iter()
+        .map(|e| EventDetails { 
+            name: e.name,
+            start_time: (),
+            end_time: (),
+            description: e.description,
+            location: e.metadata.unwrap().location,
+            rsvps: e.user_count.unwrap_or(0),
+            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.id)
+        })
+        .collect();
 
-        println!("Description: {:?}", event.description)
-        // println!("{event:?}");
-    }
-
-    "<p>this is a test</p>".to_string()
+    axum::Json(events)
 }
 
+/// API schema for `get_events` endpoint
+#[derive(Serialize)]
 struct EventDetails {
-    name: Option<String>,
+    name: String,
     start_time: (),
     end_time: (),
+    description: Option<String>,
     location: Option<String>,
-    rsvps: usize,
+    rsvps: u64,
+
+    /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
+    discord_link: String,
 }

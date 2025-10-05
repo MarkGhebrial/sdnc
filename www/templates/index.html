@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{{ config.title }}{% if page.title %} | {{ page.title }}{% endif %}</title>
+    <title>{% if page.title %}{{ config.extra.short_title }} | {{ page.title }}{% else %}{{ config.title }}{% endif %}</title>
 
     {# Bootstrap css #}
     <link href="/styles.css" rel="stylesheet">
@@ -44,19 +44,10 @@
 
     {# Only display the hero section on the front page #}
     {% if current_path == "/" %}
-      <section class="hero-section" style="background-image: url('/coffee.jpg');">
-        <div class="d-flex flex-row justify-content-center align-items-center">
+      <section class="hero-section" style="background-image: url('/groupphoto.jpg');">
+        <!-- <div class="d-flex flex-row justify-content-center align-items-center">
             <h1>San Diego Nerf Club</h1>
-
-            <!-- <div class="row justify-content-md-center">
-              <div class="col-12 col-md-11 col-lg-9 col-xl-7 col-xxl-6 text-center text-white">
-                <h2 class="display-3 fw-bold mb-3">Art of Design</h2>
-                <p class="lead mb-5">Powerful, extensible, and feature-packed frontend toolkit. Build and customize with Sass, utilize prebuilt grid system and components, and bring projects to life with powerful JavaScript plugins.</p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                  <button type="button" class="btn bsb-btn-xl btn-light gap-3">Free Consultation</button>
-                  <button type="button" class="btn bsb-btn-xl btn-outline-light">Buy Credits</button>
-                </div> -->
-        </div>
+        </div> -->
       </section>
     {% endif %}
 

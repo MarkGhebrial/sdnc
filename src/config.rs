@@ -31,4 +31,6 @@ pub struct DiscordConfig {
     pub bot_token: String,
 
     pub guild_id: u64,
+
+    pub channel_id: u64,
 }

@@ -2,8 +2,12 @@
 # The private discord api token.
 bot_token = "PUT DISCORD TOKEN HERE"
 
-# The id of the discord server. This should be a large integer
+# The id of the discord server. This should be a large integer.
 guild_id = 12345678901234567890
+
+# The id of the discord channel to invite users to. Must be a channel in the same
+# guild as the `guild_id` field. This should be a large integer.
+channel_id = 12345678901234567890
 
 [google]
 # The recaptcha site key. This should be the same as the one used on the application

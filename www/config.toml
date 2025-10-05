@@ -15,9 +15,10 @@ build_search_index = false
 highlight_code = false
 
 [extra]
-# Put all your custom variables here
+short_title = "SDNC"
+
 header_links = [
     { name = "Events", url = "/events" },
-    { name = "Rules", url = "/rules" },
+    { name = "Rules", url = "https://docs.google.com/document/d/1Yagd3RX0Ezvn7KiH8dYuR8Et-Kydmr9I59J3aoxyPfc/edit" },
     { name = "Other Clubs", url = "/#other-clubs" },
 ]
