@@ -72,18 +72,13 @@ async fn generate_invite(
     State(state): State<AppState>,
     Form(invite_form): Form<InviteForm>,
 ) -> impl IntoResponse {
-    println!(
-        "Recaptcha response token: {}",
-        invite_form.g_recaptcha_response
-    );
-
     match recaptcha_verify(&invite_form.g_recaptcha_response).await {
         Err(e) => return format!("Error validating captcha: {e}").into_response(),
         Ok(false) => return "Invalid captcha".into_response(),
         Ok(true) => { /* Continue */ }
     }
 
-    println!("Captcha passed. Generating invite...");
+    println!("Captcha passed. Generating invite.");
 
     // Generate a single use discord invite
     let channel = ChannelId::new(CONFIG.discord.channel_id);
@@ -104,8 +99,8 @@ async fn generate_invite(
 #[derive(Serialize)]
 struct EventDetails {
     name: String,
-    start_time: (),
-    end_time: (),
+    start_time: String,
+    end_time: Option<String>,
     description: Option<String>,
     location: Option<String>,
     rsvps: u64,
@@ -127,8 +122,11 @@ async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
         .into_iter()
         .map(|e| EventDetails { 
             name: e.name,
-            start_time: (),
-            end_time: (),
+            start_time: format!("{}", e.start_time.format("%m/%d/%Y %H:%M")),
+            end_time: match e.end_time {
+                Some(t) => Some(format!("{}", t.format("%m/%d/%Y %H:%M"))),
+                None => None,
+            },
             description: e.description,
             location: e.metadata.unwrap().location,
             rsvps: e.user_count.unwrap_or(0),
