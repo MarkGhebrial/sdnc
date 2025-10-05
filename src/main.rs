@@ -1,14 +1,14 @@
 use axum::{
-    extract::State, response::{IntoResponse, Redirect, Response}, routing::{get, post}, Form, Json, Router
+    extract::State, response::{IntoResponse, Redirect}, routing::{get, post}, Form, Json, Router
 };
 
 use tower_http::services::ServeDir;
 
 use serde::{Deserialize, Serialize};
 
-use std::{pin::Pin, sync::Arc};
+use std::sync::Arc;
 
-use serenity::all::{ChannelId, GuildId};
+use serenity::all::{ChannelId, CreateInvite, GuildId};
 use serenity::prelude::*;
 
 mod recaptcha_verify;
@@ -62,26 +62,26 @@ async fn generate_invite(
     );
 
     match recaptcha_verify(&invite_form.g_recaptcha_response).await {
-        Err(_) | Ok(false) => "Invalid captcha".into_response(),
-        Ok(true) => {
-            println!("Captcha passed. Generating invite...");
-
-            // Generate a single use discord invite
-            let channel = ChannelId::new(CONFIG.discord.channel_id);
-
-            // let invite = channel
-            //     .create_invite(
-            //         &state.discord_client.http,
-            //         CreateInvite::new().max_age(60).max_uses(1),
-            //     )
-            //     .await
-            //     .unwrap();
-
-            // Redirect directly to the new invite link
-            // Redirect::to(&invite.url()).into_response()
-            Redirect::to("https://google.com").into_response()
-        }
+        Err(e) => return format!("Error validating captcha: {e}").into_response(),
+        Ok(false) => return "Invalid captcha".into_response(),
+        Ok(true) => { /* Continue */ }
     }
+
+    println!("Captcha passed. Generating invite...");
+
+    // Generate a single use discord invite
+    let channel = ChannelId::new(CONFIG.discord.channel_id);
+
+    let invite = channel
+        .create_invite(
+            &state.discord_client.http,
+            CreateInvite::new().max_age(60).max_uses(1),
+        )
+        .await
+        .unwrap();
+
+    // Redirect directly to the new invite link
+    Redirect::to(&invite.url()).into_response()
 }
 
 async fn get_events(State(state): State<AppState>) -> Json<Vec<EventDetails>> {

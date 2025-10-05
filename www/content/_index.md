@@ -8,7 +8,7 @@ San Diego Nerf Club is a small group of nerf enthusiasts spread throughout South
 California. We typically host one or two public nerf games per month.
 
 You can view our current event schedule [here](/events). For more information about
-the club and our events, visit our [discord server](/join).
+the club and our events, visit our [Discord server](/join).
 
 # Venues
 
@@ -28,9 +28,20 @@ Below is a list of the places we host games:
 
 # Social Media
 
-We are most active on our Discord server. You can join by clicking [here](/discord).
+We are most active on our Discord server. You can join by clicking [here](/join).
 
 We also have a Facebook group, but it's an ancient relic that's no longer active.
+
+# Gameplay Footage
+
+Below is a list of YouTube channels where our members post recordings of their gameplay:
+- [Red Tide Team](https://youtube.com/@RedTideTeam)
+- [Zoomed Out Tahova](https://www.youtube.com/@Zoomed_Out_Tahova)
+- [h81](https://www.youtube.com/@h81_sdnc)
+- [Pki](https://www.youtube.com/@NOTdeathtree)
+- [spacedoge14](https://www.youtube.com/@spacedoge14)
+- [Beret](https://www.youtube.com/@beretnarf) used to post videos from SDNC games
+  when he lived in SoCal.
 
 ---
 
@@ -43,7 +54,7 @@ We also have a Facebook group, but it's an ancient relic that's no longer active
 LUNC is the largest club in SoCal. They host monthly games at parks in the Riverside/
 Redlands area. Their games are very casual and tend to attract families and children.
 
-The LUNC facebook group is the best way to keep track of their events.
+The LUNC Facebook group is the best way to keep track of their events.
 
 ## Small Group Nerf War
 

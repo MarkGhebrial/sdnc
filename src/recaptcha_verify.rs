@@ -37,8 +37,6 @@ pub async fn recaptcha_verify(token: &str) -> Result<bool, Box<dyn std::error::E
     // This consumes the response for some reason
     let response_text = response.text().await?;
 
-    println!("Verification response text: {}", response_text);
-
     // Parse the json response
     let data: Value = serde_json::from_str(&response_text)?;
 
