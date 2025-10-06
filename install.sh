@@ -11,7 +11,7 @@ sudo cp target/release/sdnc /var/sdnc/sdnc
 echo "Building static site"
 cd www
 zola build
-sudo cp -r public /var/sdnc/www
+sudo cp -a public/. /var/sdnc/www/
 cd ..
 
 echo "Creating config file."
