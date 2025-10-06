@@ -51,7 +51,7 @@ async fn main() {
     let router = Router::new()
         .route("/api/get_events", get(get(get_events)))
         .route("/api/generate_invite", post(generate_invite))
-        .fallback_service(ServeDir::new("/home/markg/Documents/Code/sdnc/www/public"))
+        .fallback_service(ServeDir::new("/var/sdnc/www"))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();

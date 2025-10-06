@@ -6,7 +6,7 @@ use serde::Deserialize;
 lazy_static! {
     pub static ref CONFIG: Config = {
         // Read the file
-        let path = Path::new("/home/markg/Documents/Code/sdnc/config.toml");
+        let path = Path::new("/var/sdnc/config.toml");
         let toml = fs::read_to_string(path).expect("Couldn't read config file. Is the path correct?");
 
         toml::from_str(&toml).expect("Couldn't parse config file. Is the syntax correct?")
