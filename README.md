@@ -1,6 +1,6 @@
 # sandiegonerfclub.org
 
-This is the source code for [sandiegonerfclub.org](https://sandiegonerfclub.net).
+This is the source code for [sandiegonerfclub.org](https://sandiegonerfclub.org).
 It's a mostly static zola-generated site with a simple axum-based backend.
 
 # Deploying
