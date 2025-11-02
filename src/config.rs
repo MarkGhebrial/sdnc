@@ -1,13 +1,27 @@
-use std::{fs, path::Path};
+use std::{env, fs, path::Path, process::exit};
 
 use lazy_static::lazy_static;
 use serde::Deserialize;
 
 lazy_static! {
-    pub static ref CONFIG: Config = {
+     pub static ref CONFIG: Config = {
+        let mut config_file_path: String = "/var/sdnc/config.toml".to_string();
+
+        let args: Vec<String> = env::args().collect();
+        if args.len() == 3 {
+            config_file_path = args[1].clone();
+        } else if args.len() != 1 {
+            println!("WARNING: Expected 0 or 2 args");
+        }
+
+        println!("Current working directory: {}", env::current_dir().unwrap().to_string_lossy());
+
         // Read the file
-        let path = Path::new("/var/sdnc/config.toml");
-        let toml = fs::read_to_string(path).expect("Couldn't read config file. Is the path correct?");
+        let path = Path::new(&config_file_path);
+        let toml = fs::read_to_string(path).unwrap_or_else(|_e| {
+            println!("Could not read config file at {}.", path.to_string_lossy());
+            exit(-1);
+        });
 
         toml::from_str(&toml).expect("Couldn't parse config file. Is the syntax correct?")
     };

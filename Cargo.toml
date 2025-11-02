@@ -4,13 +4,34 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Web framework
 axum = "0.8.6"
+
+# Initialization of global variables
 lazy_static = "1.5.0"
+
+# HTTP requests. Used for recaptcha verification API
 reqwest = "0.12.23"
+
+# Serialization and deserialization of json and toml
 serde = "1.0.228"
 serde_json = "1.0.145"
-serenity = "0.12.4"
-tera = "1.20.0"
-tokio = { version = "1.47.1", features = ["rt-multi-thread"] }
 toml = "0.9.7"
+
+# Discord API
+serenity = "0.12.4"
+
+# Templating engine
+tera = "1.20.0"
+
+# Async runtime
+tokio = { version = "1.47.1", features = ["rt-multi-thread"] }
+
+# Provides directory serve service for axum
 tower-http = { version = "0.6.6", features = ["fs"] }
+
+# Sqlite connector
+sqlx = { version = "0.8", features = [ "runtime-tokio" ] }
+
+# Time zones
+chrono-tz = "0.10.4"

@@ -1,6 +1,12 @@
 use axum::{
-    extract::State, response::{Html, IntoResponse, Redirect}, routing::{get, post}, Form, Router
+    Form, Router,
+    extract::State,
+    response::{Html, IntoResponse, Redirect},
+    routing::{get, post},
 };
+
+// Timezone to display the times in
+use chrono_tz::America::Los_Angeles;
 
 use tower_http::services::ServeDir;
 
@@ -10,17 +16,19 @@ use lazy_static::lazy_static;
 
 use serde::{Deserialize, Serialize};
 
-use std::sync::Arc;
+use std::{env, sync::Arc};
 
-use serenity::all::{ChannelId, CreateInvite, GuildId};
+use serenity::all::{ChannelId, CreateInvite, GuildId, Http};
 use serenity::prelude::*;
+
+mod events;
+use events::GuildEventHandler;
 
 mod recaptcha_verify;
 use recaptcha_verify::*;
 
-use crate::config::CONFIG;
-
 mod config;
+use crate::config::CONFIG;
 
 lazy_static! {
     /// Initialize the templating engine
@@ -34,29 +42,48 @@ lazy_static! {
 /// Things that route handlers need access to.
 #[derive(Clone)]
 struct AppState {
-    discord_client: Arc<Client>,
+    /// Serenity http struct for interacting with Discord API
+    http: Arc<Http>,
 }
 
 #[tokio::main]
 async fn main() {
+    // let mut config_file_path: String = "/var/sdnc/config.toml".to_string();
+    let mut static_site_path: String = "/var/sdnc/www".to_string();
+
+    let args: Vec<String> = env::args().collect();
+    if args.len() == 3 {
+        // config_file_path = args[1].clone();
+        static_site_path = args[2].clone();
+    }
+
     let discord_intents = GatewayIntents::GUILD_SCHEDULED_EVENTS;
-    let discord_client = Client::builder(&CONFIG.discord.bot_token, discord_intents)
+    let mut discord_client = Client::builder(&CONFIG.discord.bot_token, discord_intents)
+        .event_handler(GuildEventHandler)
         .await
         .unwrap();
 
     let state = AppState {
-        discord_client: Arc::new(discord_client),
+        http: Arc::clone(&discord_client.http),
     };
+
+    // Start the client in a new tokio worker so we don't block the main thread.
+    tokio::spawn(async move {
+        discord_client.start().await.unwrap();
+    });
+
+    // discord_client.start().await.unwrap();
+    // discord_client.start_autosharded().await.unwrap();
 
     let router = Router::new()
         .route("/api/get_events", get(get(get_events)))
         .route("/api/generate_invite", post(generate_invite))
-        .fallback_service(ServeDir::new("/var/sdnc/www"))
+        .fallback_service(ServeDir::new(&static_site_path))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
     println!("Listening on port 3000");
-    axum::serve(listener, router).await.unwrap();
+    axum::serve(listener, router).await.unwrap(); // axum::serve blocks the main thread
 }
 
 /// Form data for /api/generate_invite endpoint
@@ -84,10 +111,7 @@ async fn generate_invite(
     let channel = ChannelId::new(CONFIG.discord.channel_id);
 
     let invite = channel
-        .create_invite(
-            &state.discord_client.http,
-            CreateInvite::new().max_age(60).max_uses(1),
-        )
+        .create_invite(&state.http, CreateInvite::new().max_age(60).max_uses(1))
         .await
         .unwrap(); // TODO: Handle this unwrap gracefully
 
@@ -113,24 +137,29 @@ struct EventDetails {
 /// and fills them into an html template.
 async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
     let guild = GuildId::new(CONFIG.discord.guild_id);
-    let events = guild
-        .scheduled_events(&state.discord_client.http, true)
-        .await
-        .unwrap(); // TODO: Handle this unwrap gracefully
+    let events = guild.scheduled_events(&state.http, true).await.unwrap(); // TODO: Handle this unwrap gracefully
 
     let events: Vec<EventDetails> = events
         .into_iter()
-        .map(|e| EventDetails { 
+        .map(|e| EventDetails {
             name: e.name,
-            start_time: format!("{}", e.start_time.format("%m/%d/%Y %H:%M")),
+            start_time: format!(
+                "{}",
+                e.start_time
+                    .with_timezone(&Los_Angeles)
+                    .format("%m/%d/%Y %l:%M%P")
+            ),
             end_time: match e.end_time {
-                Some(t) => Some(format!("{}", t.format("%m/%d/%Y %H:%M"))),
+                Some(t) => Some(format!(
+                    "{}",
+                    t.with_timezone(&Los_Angeles).format("%m/%d/%Y %l:%M%P")
+                )),
                 None => None,
             },
             description: e.description,
             location: e.metadata.unwrap().location,
             rsvps: e.user_count.unwrap_or(0),
-            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.id)
+            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.id),
         })
         .collect();
 
@@ -146,4 +175,3 @@ async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
     // Return the output of the template as HTML content type
     Html(body)
 }
-
