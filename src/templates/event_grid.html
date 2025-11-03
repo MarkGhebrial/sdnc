@@ -13,7 +13,7 @@
                         </h4>
                         <div class="card-body">
                             <!-- <h4 class="card-title">{{ event.name }}</h3> -->
-                            <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.start_time }}{% if event.end_time %} - {{event.end_time}}{% endif %}</h6>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.start_time | date(format="%m/%d/%Y %l:%M%P") }}{% if event.end_time %} - {{ event.end_time | date(format="%m/%d/%Y %l:%M%P") }}{% endif %}</h6>
                             {% if event.location %}<h6 class="card-subtitle mb-2 text-body-secondary">Location: {{ event.location }}</h6>{% endif %}
                             <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.rsvps }} {% if event.rsvps == 1 %}person has RSVP'd{% else %}people have RSVP'd{% endif %}</h6>
                             
