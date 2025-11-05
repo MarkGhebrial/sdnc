@@ -1,7 +1,8 @@
 # sandiegonerfclub.org
 
 This is the source code for [sandiegonerfclub.org](https://sandiegonerfclub.org).
-It's a mostly static zola-generated site with a simple axum-based backend.
+It's a mostly static zola-generated site with a simple axum-based backend. It's an
+extremely cursed way to make a website, please don't ever copy this architecture.
 
 # Deploying
 
