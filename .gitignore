@@ -3,6 +3,3 @@
 
 # Don't commit config.toml because it contains API keys
 config.toml
-
-/.sqlx
-*.db
