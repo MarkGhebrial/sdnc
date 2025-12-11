@@ -55,8 +55,8 @@ Below is a list of YouTube channels where our members post recordings of their g
 
 ## Lazy Uncles' Nerf Club
 
-LUNC is the largest club in SoCal. They host monthly games at parks in the Riverside/
-Redlands area. Their games are very casual and tend to attract families and children.
+LUNC is the largest club in SoCal. They host monthly games at parks in the
+Riverside/Redlands area. Their games are very casual and tend to attract families and children.
 
 The LUNC Facebook group is the best way to keep track of their events.
 

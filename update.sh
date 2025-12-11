@@ -19,5 +19,6 @@ sudo cp sdnc.service /etc/systemd/system/sdnc.service
 sudo systemctl daemon-reload
 # Copy the new executable over
 sudo cp target/release/sdnc /var/sdnc/sdnc
+sudo systemctl stop sdnc
 sudo systemctl enable sdnc
 sudo systemctl start sdnc
