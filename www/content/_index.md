@@ -35,7 +35,7 @@ We also have a Facebook group, but it's an ancient relic that's no longer active
 # Gameplay Footage
 
 Below is a list of YouTube channels where our members post recordings of their gameplay:
-- [Red Tide Team](https://youtube.com/@RedTideTeam)
+- [Red Tide Nerfing](https://www.youtube.com/@RedTideNerfing)
 - [h81](https://www.youtube.com/@h81_sdnc)
 - [Zoomed Out Tahova](https://www.youtube.com/@Zoomed_Out_Tahova)
 - [spacedoge14](https://www.youtube.com/@spacedoge14)
