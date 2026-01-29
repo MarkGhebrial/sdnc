@@ -22,5 +22,5 @@ To run the server without installing it:
 cd www
 zola build
 cd ..
-cargo r -- /config.toml /www/public
+cargo r -- -c ./config.toml -s ./www/public
 ```

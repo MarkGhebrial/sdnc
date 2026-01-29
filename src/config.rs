@@ -1,20 +1,16 @@
 use std::{env, fs, path::Path, process::exit};
 
+use clap::Parser;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 
+use crate::cli::Cli;
+
 lazy_static! {
      pub static ref CONFIG: Config = {
-        let mut config_file_path: String = "/var/sdnc/config.toml".to_string();
-
-        let args: Vec<String> = env::args().collect();
-        if args.len() == 3 {
-            config_file_path = args[1].clone();
-        } else if args.len() != 1 {
-            println!("WARNING: Expected 0 or 2 args");
-        }
-
-        println!("Current working directory: {}", env::current_dir().unwrap().to_string_lossy());
+        let args = Cli::parse();
+        // If a path is not specified in the command line arguments, use the current working directory
+        let config_file_path = args.config_path.unwrap_or(env::current_dir().unwrap());
 
         // Read the file
         let path = Path::new(&config_file_path);

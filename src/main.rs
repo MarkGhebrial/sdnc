@@ -1,12 +1,7 @@
 use axum::{
-    Form, Router,
-    extract::State,
-    response::{Html, IntoResponse, Redirect},
+    Router,
     routing::{get, post},
 };
-
-// Timezone to display the times in
-use chrono_tz::America::Los_Angeles;
 
 use tower_http::services::ServeDir;
 
@@ -14,23 +9,23 @@ use tera::Tera;
 
 use lazy_static::lazy_static;
 
-use serde::{Deserialize, Serialize};
+use std::{env, path::PathBuf, sync::Arc};
 
-use std::{env, sync::Arc};
-
-use serenity::all::{ChannelId, CreateInvite, GuildId, Http};
+use serenity::all::Http;
 use serenity::prelude::*;
 
-mod events;
-use events::GuildEventHandler;
+use clap::Parser;
 
-mod recaptcha_verify;
-use recaptcha_verify::*;
-
+mod cli;
 mod config;
-use crate::config::CONFIG;
-
+mod events;
 mod handlers;
+mod recaptcha_verify;
+
+use events::GuildEventHandler;
+use crate::{config::CONFIG};
+use recaptcha_verify::*;
+use cli::Cli;
 
 lazy_static! {
     /// Initialize the templating engine
@@ -50,14 +45,13 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    // let mut config_file_path: String = "/var/sdnc/config.toml".to_string();
-    let mut static_site_path: String = "/var/sdnc/www".to_string();
+    let args = Cli::parse();
 
-    let args: Vec<String> = env::args().collect();
-    if args.len() == 3 {
-        // config_file_path = args[1].clone();
-        static_site_path = args[2].clone();
-    }
+    let static_site_path: PathBuf = match args.static_site_path {
+        Some(s) => s,
+        None => "/var/sdnc/www".into(),
+    };
+
 
     let discord_intents = GatewayIntents::GUILD_SCHEDULED_EVENTS;
     let mut discord_client = Client::builder(&CONFIG.discord.bot_token, discord_intents)
