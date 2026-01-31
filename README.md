@@ -22,5 +22,11 @@ To run the server without installing it:
 cd www
 zola build
 cd ..
-cargo r -- -c ./config.toml -s ./www/public
+cp example_config.toml config.toml
+
+# In config.toml, set the following:
+#   static_site_path = "www/public"
+#   database_path = "database.sqlite"
+
+cargo r -- -c ./config.toml
 ```
