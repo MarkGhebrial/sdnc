@@ -1,9 +1,11 @@
-use axum::{extract::State, response::{Html, IntoResponse}};
+use axum::{
+    extract::State,
+    response::{Html, IntoResponse},
+};
 use serde::Serialize;
 use serenity::all::GuildId;
 
 use crate::{AppState, TERA, config::CONFIG};
-
 
 /// Struct for "event_grid" template data
 #[derive(Serialize)]
@@ -38,7 +40,8 @@ pub async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
             end_time: match e.end_time {
                 Some(t) => Some(format!(
                     "{}",
-                    t.with_timezone(&chrono_tz::America::Los_Angeles).format("%m/%d/%Y %l:%M%P")
+                    t.with_timezone(&chrono_tz::America::Los_Angeles)
+                        .format("%m/%d/%Y %l:%M%P")
                 )),
                 None => None,
             },

@@ -1,8 +1,6 @@
-use serenity::{
-    all::{
-        Context, EventHandler, GuildScheduledEventUserAddEvent, GuildScheduledEventUserRemoveEvent,
-        ScheduledEvent,
-    },
+use serenity::all::{
+    Context, EventHandler, GuildScheduledEventUserAddEvent, GuildScheduledEventUserRemoveEvent,
+    ScheduledEvent,
 };
 
 use crate::database::connect_to_database;
