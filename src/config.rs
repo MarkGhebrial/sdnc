@@ -1,4 +1,8 @@
-use std::{env, fs, path::Path, process::exit};
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+    process::exit,
+};
 
 use clap::Parser;
 use lazy_static::lazy_static;
@@ -25,6 +29,11 @@ lazy_static! {
 
 #[derive(Deserialize)]
 pub struct Config {
+    #[serde(default = "default_static_site_path")]
+    pub static_site_path: PathBuf,
+    #[serde(default = "default_database_path")]
+    pub database_path: PathBuf,
+
     pub google: GoogleApiConfig,
     pub discord: DiscordConfig,
 }
@@ -43,4 +52,11 @@ pub struct DiscordConfig {
     pub guild_id: u64,
 
     pub channel_id: u64,
+}
+
+fn default_static_site_path() -> PathBuf {
+    "/var/sdnc/www".into()
+}
+fn default_database_path() -> PathBuf {
+    "/var/sdnc/".into()
 }
