@@ -33,8 +33,8 @@ tower-http = { version = "0.6.6", features = ["fs"] }
 # Time zones
 chrono-tz = "0.10.4"
 
-# Sqlite connector
-rusqlite = { version = "0.38.0", features = ["bundled"] }
-
 # Command line argument parser
 clap = { version = "4.5.56", features = ["derive"] }
+
+# ORM
+diesel = { version = "2.3.6", features = ["sqlite"] }

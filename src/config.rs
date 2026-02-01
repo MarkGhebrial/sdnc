@@ -31,8 +31,8 @@ lazy_static! {
 pub struct Config {
     #[serde(default = "default_static_site_path")]
     pub static_site_path: PathBuf,
-    #[serde(default = "default_database_path")]
-    pub database_path: PathBuf,
+    #[serde(default = "default_database_url")]
+    pub database_url: String,
 
     pub google: GoogleApiConfig,
     pub discord: DiscordConfig,
@@ -57,6 +57,6 @@ pub struct DiscordConfig {
 fn default_static_site_path() -> PathBuf {
     "/var/sdnc/www".into()
 }
-fn default_database_path() -> PathBuf {
-    "/var/sdnc/".into()
+fn default_database_url() -> String {
+    "sdnc.sqlite".into()
 }

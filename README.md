@@ -26,7 +26,9 @@ cp example_config.toml config.toml
 
 # In config.toml, set the following:
 #   static_site_path = "www/public"
-#   database_path = "database.sqlite"
+#   database_path = "sdnc.sqlite"
+
+diesel migration run --database-url sdnc.sqlite
 
 cargo r -- -c ./config.toml
 ```

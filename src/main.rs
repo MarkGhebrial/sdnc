@@ -52,13 +52,7 @@ struct AppState {
 async fn main() {
     match &CLI_ARGS.subcommand {
         Some(CliSubcommands::InitDatabase { dir: _ }) => {
-            // TODO: Use the dir field. Currently, the program uses CONFIG.database_path instead
-
-            println!("Initializing database at {:?}", CONFIG.database_path);
-
-            database::create_database().unwrap();
-
-            println!("Success");
+            println!("Not implemented :)"); // TODO: Implement this
         }
         None => start_server().await,
     };
