@@ -526,6 +526,7 @@ version = "2.3.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d9b6c2fc184a6fb6ebcf5f9a5e3bbfa84d8fd268cdfcce4ed508979a6259494d"
 dependencies = [
+ "chrono",
  "diesel_derives",
  "downcast-rs",
  "libsqlite3-sys",

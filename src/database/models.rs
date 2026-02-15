@@ -1,5 +1,6 @@
 use super::schema::events;
-use chrono_tz::America;
+use chrono::Utc;
+use chrono::DateTime;
 use diesel::{
     Queryable, Selectable,
     prelude::{AsChangeset, Insertable},
@@ -11,8 +12,8 @@ use serenity::all::ScheduledEvent;
 pub struct Event {
     pub event_id: f64,
     pub guild_id: f64,
-    pub start_time: String,
-    pub end_time: Option<String>,
+    pub start_time: DateTime<Utc>,
+    pub end_time: Option<DateTime<Utc>>,
     pub event_name: String,
     pub event_description: Option<String>,
     pub event_location: Option<String>,
@@ -26,11 +27,10 @@ impl From<ScheduledEvent> for Event {
             guild_id: value.guild_id.get() as f64,
             start_time: value
                 .start_time
-                .with_timezone(&America::Los_Angeles)
-                .to_rfc3339(),
+                .with_timezone(&Utc),
             end_time: value
                 .end_time
-                .map(|t| t.with_timezone(&America::Los_Angeles).to_rfc3339()),
+                .map(|t| t.with_timezone(&Utc)),
             event_name: value.name,
             event_description: value.description,
             event_location: value.metadata.and_then(|m| m.location),

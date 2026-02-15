@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use chrono::Utc;
 use diesel::RunQueryDsl;
-use serenity::all::GuildId;
+use serenity::all::{GuildId, ScheduledEventStatus};
 use serenity::all::{
     Context, EventHandler, GuildScheduledEventUserAddEvent, GuildScheduledEventUserRemoveEvent,
     ScheduledEvent,
@@ -29,8 +29,6 @@ impl EventHandler for GuildEventHandler {
 
         let event = models::Event::from(discord_event);
 
-        println!("Event to be inserted: {:#?}", event);
-
         diesel::insert_into(events)
             .values(&event)
             .execute(&mut conn)
@@ -41,6 +39,13 @@ impl EventHandler for GuildEventHandler {
         use schema::events::dsl::*;
 
         println!("Guild scheduled event update");
+
+        // Don't update the event if it's completed
+        // TODO: This doesn't actually do what I need it to do
+        if discord_event.status == ScheduledEventStatus::Completed {
+            println!("Event already completed, skipping update");
+            return;
+        }
 
         let mut conn = connect_to_database();
 
@@ -83,7 +88,7 @@ impl EventHandler for GuildEventHandler {
     ) {
         use schema::events::dsl::*;
 
-        println!("Guild scheduled event user add");
+        println!("Guild scheduled event user remove");
 
         let id = discord_event.scheduled_event_id.get() as f64;
 
@@ -142,7 +147,7 @@ pub async fn synchronize_events(http: Arc<serenity::all::Http>) {
     // For some reason, the query doesn't work properly unless we replace the "T"
     // separator with a space. Genuinely no idea why that is. Maybe some weird diesel
     // behavior?
-    let current_time = Utc::now().to_rfc3339().replace("T", " ");
+    let current_time = Utc::now();//.to_rfc3339().replace("T", " ");
 
     let discord_event_ids: Vec<f64> = discord_events.iter().map(|e| e.id.get() as f64).collect();
 
@@ -150,7 +155,7 @@ pub async fn synchronize_events(http: Arc<serenity::all::Http>) {
     // SELECT event_id FROM events E WHERE E.end_time >= date();
     let event_ids: Vec<f64> = events
         .select(event_id)
-        .filter(end_time.ge(current_time))
+        .filter(end_time.assume_not_null().gt(current_time))
         .load(&mut conn)
         .unwrap();
 

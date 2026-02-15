@@ -2,13 +2,13 @@ use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
-use chrono::{DateTime, Utc};
+use chrono::Utc;
+use chrono_tz::America;
 use diesel::prelude::*;
 use serde::Serialize;
 
 use crate::{
-    AppState, TERA,
-    database::{self, models, schema},
+    AppState, TERA, config::CONFIG, database::{self, models, schema}
 };
 
 /// Struct for "event_grid" template data
@@ -35,19 +35,21 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
     let query_result = {
         use schema::events::dsl::*;
 
-        let current_time = Utc::now().to_rfc3339().replace("T", " ");
+        let current_time = Utc::now();
 
         // Fetch the events from the database
         let query_result = if get_past_events {
             events
                 .select(models::Event::as_select())
                 .filter(end_time.le(current_time))
+                .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
                 .order(start_time)
                 .load(&mut conn)
         } else {
             events
                 .select(models::Event::as_select())
-                .filter(end_time.ge(current_time))
+                .filter(end_time.gt(current_time))
+                .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
                 .order(start_time)
                 .load(&mut conn)
         };
@@ -62,13 +64,12 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
         .into_iter()
         .map(|e| EventDetails {
             name: e.event_name,
-            start_time: DateTime::parse_from_rfc3339(&e.start_time)
-                .unwrap()
+            start_time: e.start_time
+                .with_timezone(&America::Los_Angeles)
                 .format("%m/%d/%Y %l:%M%P")
                 .to_string(),
             end_time: e.end_time.map(|s| {
-                DateTime::parse_from_rfc3339(&s)
-                    .unwrap()
+                s.with_timezone(&America::Los_Angeles)
                     .format("%m/%d/%Y %l:%M%P")
                     .to_string()
             }),
