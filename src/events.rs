@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use chrono::{DateTime, Utc};
+use chrono::Utc;
 use diesel::RunQueryDsl;
 use serenity::all::GuildId;
 use serenity::all::{
