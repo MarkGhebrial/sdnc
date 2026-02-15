@@ -1,0 +1,1 @@
+export const website_title = "San Diego Nerf Club";

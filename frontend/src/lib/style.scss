@@ -1,0 +1,14 @@
+@import "/node_modules/bootstrap/scss/bootstrap";
+
+.hero-section {
+    min-height: 500px;
+    background-repeat: no-repeat; /*removes repetition*/
+    background-size: cover;
+    background-position: center
+}
+
+// This is probably not the right solution
+#content {
+    max-width: 900px;
+    margin: auto
+}
