@@ -148,7 +148,7 @@ pub async fn synchronize_events(http: Arc<serenity::all::Http>) {
     // SELECT event_id FROM events E WHERE E.end_time >= date();
     let event_ids: Vec<f64> = events
         .select(event_id)
-        .filter(end_time.ge(current_time.to_rfc3339()))
+        .filter(end_time.ge(current_time.to_rfc3339())) // TODO: This doesn't work as expected
         .load(&mut conn)
         .unwrap();
 

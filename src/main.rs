@@ -9,7 +9,7 @@ use tera::Tera;
 
 use lazy_static::lazy_static;
 
-use std::sync::Arc;
+use std::{sync::Arc, time::Duration};
 
 use serenity::all::Http;
 use serenity::prelude::*;
@@ -70,9 +70,14 @@ async fn start_server() {
     };
 
     // Fetch the events from Discord and make sure the database is up to date
-    // TODO: Run this on a schedule
-    // TODO: Log if any changes occur when this runs
-    synchronize_events(state.http.clone()).await;
+    let h = Arc::clone(&discord_client.http);
+    tokio::spawn(async move {
+        println!("Synchronizing events");
+        // TODO: Log the database operations this triggers, if any
+        synchronize_events(h).await;
+
+        tokio::time::sleep(Duration::from_mins(20)).await;
+    });
 
     // Start the discord client in a new tokio worker so we don't block the main thread.
     tokio::spawn(async move {
