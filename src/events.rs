@@ -130,25 +130,27 @@ pub async fn synchronize_events(http: Arc<serenity::all::Http>) {
 
         diesel::insert_into(events)
             .values(&event)
-            .on_conflict(event_id).do_update().set(&event)
+            .on_conflict(event_id)
+            .do_update()
+            .set(&event)
             .execute(&mut conn)
             .unwrap();
     }
 
     /**** Delete events that are no longer on discord ****/
 
-    let current_time: DateTime<Utc> = Utc::now();
+    // For some reason, the query doesn't work properly unless we replace the "T"
+    // separator with a space. Genuinely no idea why that is. Maybe some weird diesel
+    // behavior?
+    let current_time = Utc::now().to_rfc3339().replace("T", " ");
 
     let discord_event_ids: Vec<f64> = discord_events.iter().map(|e| e.id.get() as f64).collect();
-
-    println!("{}", current_time.to_rfc3339());
-
 
     // Get the event ids of events that have not ended yet
     // SELECT event_id FROM events E WHERE E.end_time >= date();
     let event_ids: Vec<f64> = events
         .select(event_id)
-        .filter(end_time.ge(current_time.to_rfc3339())) // TODO: This doesn't work as expected
+        .filter(end_time.ge(current_time))
         .load(&mut conn)
         .unwrap();
 

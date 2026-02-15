@@ -85,7 +85,11 @@ async fn start_server() {
     });
 
     let router = Router::new()
-        .route("/api/get_events", get(get(handlers::get_events)))
+        .route("/api/get_events", get(handlers::get_events))
+        .route(
+            "/api/get_previous_events",
+            get(handlers::get_previous_events),
+        )
         .route("/api/generate_invite", post(handlers::generate_invite))
         .fallback_service(ServeDir::new(&CONFIG.static_site_path))
         .with_state(state);

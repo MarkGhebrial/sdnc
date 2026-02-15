@@ -2,8 +2,8 @@ use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
-use chrono::DateTime;
-use diesel::{associations::HasTable, prelude::*};
+use chrono::{DateTime, Utc};
+use diesel::prelude::*;
 use serde::Serialize;
 
 use crate::{
@@ -22,28 +22,43 @@ pub struct EventDetails {
     rsvps: i32,
 
     /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
-    discord_link: String,
+    ///
+    /// This entry is None for events that are no longer on the discord server (i.e
+    /// events that are in the past.)
+    discord_link: Option<String>,
 }
 
-/// Handler for /api/get_events route. Fetches list of events from Discord guild
-/// and fills them into an html template.
-pub async fn get_events(State(_state): State<AppState>) -> impl IntoResponse {
+// TODO: This function needs some cleanup
+async fn event_helper(get_past_events: bool) -> impl IntoResponse {
     let mut conn = database::connect_to_database();
 
-    // Fetch the events from the database
-    let Ok(events) = schema::events::table::table()
-        .select(models::Event::as_select())
-        .load(&mut conn)
-    else {
-        println!("Database error");
-        return Html("<p>Error getting events.</>".to_owned());
+    let query_result = {
+        use schema::events::dsl::*;
+
+        let current_time = Utc::now().to_rfc3339().replace("T", " ");
+
+        // Fetch the events from the database
+        let query_result = if get_past_events {
+            events
+                .select(models::Event::as_select())
+                .filter(end_time.le(current_time))
+                .order(start_time)
+                .load(&mut conn)
+        } else {
+            events
+                .select(models::Event::as_select())
+                .filter(end_time.ge(current_time))
+                .order(start_time)
+                .load(&mut conn)
+        };
+
+        match query_result {
+            Ok(r) => r,
+            Err(_) => return Html("<p>Error getting events.</p>".to_owned()),
+        }
     };
 
-    // Get the events from the discord server
-    // let guild = GuildId::new(CONFIG.discord.guild_id);
-    // let events = guild.scheduled_events(&state.http, true).await.unwrap(); // TODO: Handle this unwrap gracefully
-
-    let events: Vec<EventDetails> = events
+    let events: Vec<EventDetails> = query_result
         .into_iter()
         .map(|e| EventDetails {
             name: e.event_name,
@@ -60,7 +75,14 @@ pub async fn get_events(State(_state): State<AppState>) -> impl IntoResponse {
             description: e.event_description,
             location: e.event_location,
             rsvps: e.rsvps,
-            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.event_id),
+            discord_link: if !get_past_events {
+                Some(format!(
+                    "https://discord.com/events/{}/{}",
+                    e.guild_id, e.event_id
+                ))
+            } else {
+                None
+            },
         })
         .collect();
 
@@ -75,4 +97,14 @@ pub async fn get_events(State(_state): State<AppState>) -> impl IntoResponse {
 
     // Return the output of the template as HTML content type
     Html(body)
+}
+
+/// Handler for /api/get_events route. Fetches list of events from Discord guild
+/// and fills them into an html template.
+pub async fn get_events(State(_state): State<AppState>) -> impl IntoResponse {
+    event_helper(false).await
+}
+
+pub async fn get_previous_events(State(_state): State<AppState>) -> impl IntoResponse {
+    event_helper(true).await
 }
