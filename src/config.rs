@@ -58,5 +58,5 @@ fn default_static_site_path() -> PathBuf {
     "/var/sdnc/www".into()
 }
 fn default_database_url() -> String {
-    "sdnc.sqlite".into()
+    "database.sqlite".into()
 }

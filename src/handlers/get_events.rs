@@ -2,10 +2,14 @@ use axum::{
     extract::State,
     response::{Html, IntoResponse},
 };
+use chrono::DateTime;
+use diesel::{associations::HasTable, prelude::*};
 use serde::Serialize;
-use serenity::all::GuildId;
 
-use crate::{AppState, TERA, config::CONFIG};
+use crate::{
+    AppState, TERA,
+    database::{self, models, schema},
+};
 
 /// Struct for "event_grid" template data
 #[derive(Serialize)]
@@ -15,7 +19,7 @@ pub struct EventDetails {
     end_time: Option<String>,
     description: Option<String>,
     location: Option<String>,
-    rsvps: u64,
+    rsvps: i32,
 
     /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
     discord_link: String,
@@ -23,32 +27,40 @@ pub struct EventDetails {
 
 /// Handler for /api/get_events route. Fetches list of events from Discord guild
 /// and fills them into an html template.
-pub async fn get_events(State(state): State<AppState>) -> impl IntoResponse {
-    let guild = GuildId::new(CONFIG.discord.guild_id);
-    let events = guild.scheduled_events(&state.http, true).await.unwrap(); // TODO: Handle this unwrap gracefully
+pub async fn get_events(State(_state): State<AppState>) -> impl IntoResponse {
+    let mut conn = database::connect_to_database();
+
+    // Fetch the events from the database
+    let Ok(events) = schema::events::table::table()
+        .select(models::Event::as_select())
+        .load(&mut conn)
+    else {
+        println!("Database error");
+        return Html("<p>Error getting events.</>".to_owned());
+    };
+
+    // Get the events from the discord server
+    // let guild = GuildId::new(CONFIG.discord.guild_id);
+    // let events = guild.scheduled_events(&state.http, true).await.unwrap(); // TODO: Handle this unwrap gracefully
 
     let events: Vec<EventDetails> = events
         .into_iter()
         .map(|e| EventDetails {
-            name: e.name,
-            start_time: format!(
-                "{}",
-                e.start_time
-                    .with_timezone(&chrono_tz::America::Los_Angeles)
+            name: e.event_name,
+            start_time: DateTime::parse_from_rfc3339(&e.start_time)
+                .unwrap()
+                .format("%m/%d/%Y %l:%M%P")
+                .to_string(),
+            end_time: e.end_time.map(|s| {
+                DateTime::parse_from_rfc3339(&s)
+                    .unwrap()
                     .format("%m/%d/%Y %l:%M%P")
-            ),
-            end_time: match e.end_time {
-                Some(t) => Some(format!(
-                    "{}",
-                    t.with_timezone(&chrono_tz::America::Los_Angeles)
-                        .format("%m/%d/%Y %l:%M%P")
-                )),
-                None => None,
-            },
-            description: e.description,
-            location: e.metadata.unwrap().location,
-            rsvps: e.user_count.unwrap_or(0),
-            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.id),
+                    .to_string()
+            }),
+            description: e.event_description,
+            location: e.event_location,
+            rsvps: e.rsvps,
+            discord_link: format!("https://discord.com/events/{}/{}", e.guild_id, e.event_id),
         })
         .collect();
 

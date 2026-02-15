@@ -23,7 +23,7 @@ mod events;
 mod handlers;
 mod recaptcha_verify;
 
-use crate::{cli::CliSubcommands, config::CONFIG};
+use crate::{cli::CliSubcommands, config::CONFIG, events::synchronize_events};
 use cli::Cli;
 use events::GuildEventHandler;
 use recaptcha_verify::*;
@@ -69,7 +69,12 @@ async fn start_server() {
         http: Arc::clone(&discord_client.http),
     };
 
-    // Start the client in a new tokio worker so we don't block the main thread.
+    // Fetch the events from Discord and make sure the database is up to date
+    // TODO: Run this on a schedule
+    // TODO: Log if any changes occur when this runs
+    synchronize_events(state.http.clone()).await;
+
+    // Start the discord client in a new tokio worker so we don't block the main thread.
     tokio::spawn(async move {
         discord_client.start().await.unwrap();
     });

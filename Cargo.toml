@@ -30,7 +30,8 @@ tokio = { version = "1.47.1", features = ["rt-multi-thread"] }
 # Provides directory serve service for axum
 tower-http = { version = "0.6.6", features = ["fs"] }
 
-# Time zones
+# Time and time zones
+chrono = "0.4.43"
 chrono-tz = "0.10.4"
 
 # Command line argument parser
