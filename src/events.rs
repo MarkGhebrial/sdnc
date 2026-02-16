@@ -2,11 +2,11 @@ use std::sync::Arc;
 
 use chrono::Utc;
 use diesel::RunQueryDsl;
-use serenity::all::{GuildId, ScheduledEventStatus};
 use serenity::all::{
     Context, EventHandler, GuildScheduledEventUserAddEvent, GuildScheduledEventUserRemoveEvent,
     ScheduledEvent,
 };
+use serenity::all::{GuildId, ScheduledEventStatus};
 
 use diesel::prelude::*;
 
@@ -147,7 +147,7 @@ pub async fn synchronize_events(http: Arc<serenity::all::Http>) {
     // For some reason, the query doesn't work properly unless we replace the "T"
     // separator with a space. Genuinely no idea why that is. Maybe some weird diesel
     // behavior?
-    let current_time = Utc::now();//.to_rfc3339().replace("T", " ");
+    let current_time = Utc::now(); //.to_rfc3339().replace("T", " ");
 
     let discord_event_ids: Vec<f64> = discord_events.iter().map(|e| e.id.get() as f64).collect();
 

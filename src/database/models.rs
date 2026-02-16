@@ -1,6 +1,6 @@
 use super::schema::events;
-use chrono::Utc;
 use chrono::DateTime;
+use chrono::Utc;
 use diesel::{
     Queryable, Selectable,
     prelude::{AsChangeset, Insertable},
@@ -25,12 +25,8 @@ impl From<ScheduledEvent> for Event {
         Self {
             event_id: value.id.get() as f64,
             guild_id: value.guild_id.get() as f64,
-            start_time: value
-                .start_time
-                .with_timezone(&Utc),
-            end_time: value
-                .end_time
-                .map(|t| t.with_timezone(&Utc)),
+            start_time: value.start_time.with_timezone(&Utc),
+            end_time: value.end_time.map(|t| t.with_timezone(&Utc)),
             event_name: value.name,
             event_description: value.description,
             event_location: value.metadata.and_then(|m| m.location),
