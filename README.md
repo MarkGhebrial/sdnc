@@ -12,15 +12,18 @@ When updating the deployment, run `bash update.sh`
 
 # Developing
 
-The backend takes either two or zero command line arguments. Providing zero arguments
-causes it to look for the config file and static site in the default locations
-(/var/sdnc/config.toml and /var/sdnc/www). Providing two arguments overrides those
-defaults.
-
 To run the server without installing it:
 ```bash
 cd www
 zola build
 cd ..
-cargo r -- /config.toml /www/public
+cp example_config.toml config.toml
+
+# In config.toml, set the following:
+#   static_site_path = "www/public"
+#   database_path = "database.sqlite"
+
+diesel migration run --database-url database.sqlite
+
+cargo r -- -c ./config.toml
 ```

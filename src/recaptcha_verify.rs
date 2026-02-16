@@ -7,7 +7,7 @@ use crate::config::CONFIG;
 
 /// Send an API request to google to validate a recaptcha token
 pub async fn recaptcha_verify(token: &str) -> Result<bool, Box<dyn std::error::Error>> {
-    if token == "" {
+    if token.is_empty() {
         return Ok(false);
     }
 

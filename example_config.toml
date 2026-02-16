@@ -1,21 +1,25 @@
+### These are optional
+# static_site_path = "/var/sdnc/www"
+# database_path = "/var/sdnc/database.sqlite"
+
 [discord]
-# The private discord api token.
+### The private discord api token.
 bot_token = "PUT DISCORD TOKEN HERE"
 
-# The id of the discord server. This should be a large integer.
+### The id of the discord server. This should be a large integer.
 guild_id = 12345678901234567890
 
-# The id of the discord channel to invite users to. Must be a channel in the same
-# guild as the `guild_id` field. This should be a large integer.
+### The id of the discord channel to invite users to. Must be a channel in the same
+### guild as the `guild_id` field. This should be a large integer.
 channel_id = 12345678901234567890
 
 [google]
-# The recaptcha site key. This should be the same as the one used on the application
-# frontend.
+### The recaptcha site key. This should be the same as the one used on the application
+### frontend.
 recaptcha_site_key = "PUT RECAPTCHA SITE KEY HERE"
 
-# The private google api key.
+### The private google api key.
 google_api_key = "PUT GOOGLE API KEY HERE"
 
-# The name of the google cloud project.
+### The name of the google cloud project.
 google_cloud_project_name = "PUT PROJECT NAME HERE"

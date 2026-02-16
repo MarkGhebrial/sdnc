@@ -10,16 +10,25 @@
             success: function( result ) {
                 // Replace the "event list" element with the result of the query
                 $( "div.loading" ).hide();
-                $( "div.event-list" ).replaceWith( result );
+
+                document.getElementById("event-list").innerHTML = result;
+                console.log("AJAX request completed");
+            }
+        });
+
+        $.ajax({
+            url: "/api/get_previous_events",
+            success: function( result ) {
+                // Replace the "event list" element with the result of the query
+                $( "div.loading" ).hide();
+
+                document.getElementById("previous-event-list").innerHTML = result
                 console.log("AJAX request completed");
             }
         });
     }
 
-    // Load the event list after the page loads
-    // $( document ).ready(function() {
-        loadEventList();
-    // });
+    loadEventList();
 </script>
 
 <button class = "btn btn-outline-light mb-2" onclick="loadEventList()">Refresh Event List</button>
@@ -32,5 +41,11 @@
     </div>
 </div>
 
-<div class="event-list">
+<div id="event-list">
+</div>
+
+<h1>Previous events</h1>
+<p>Note: This list is not comprehensive. It only goes back to February 2026.</p>
+
+<div id="previous-event-list">
 </div>

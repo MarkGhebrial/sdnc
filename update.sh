@@ -4,6 +4,9 @@ git pull
 
 cargo build --release
 
+# Apply database migrations
+target/release/sdnc -c "/var/sdnc/config.toml" init-database
+
 echo "Building static site"
 cd www
 zola build

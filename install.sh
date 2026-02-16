@@ -22,6 +22,6 @@ echo "Installing systemd service file."
 sudo cp sdnc.service /etc/systemd/system/sdnc.service
 sudo systemctl daemon-reload
 
-echo "Done. Edit /var/sdnc/config.toml, then start and enable the sdnc service."
+echo "Done. Edit /var/sdnc/config.toml, then run the database migrations, then start and enable the sdnc service."
 # sudo systemctl enable sdnc
 # sudo systemctl start sdnc

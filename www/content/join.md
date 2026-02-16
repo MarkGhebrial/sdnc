@@ -2,6 +2,8 @@
 template = "index.html"
 +++
 
+# Join SDNC
+
 SDNC does not have an official membership system. If you want to attend one of our
 games, all you have to do is show up. However, it's a good idea to join our Discord
 server first so you can stay up to date with event details.

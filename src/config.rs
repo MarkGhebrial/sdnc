@@ -1,20 +1,20 @@
-use std::{env, fs, path::Path, process::exit};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    process::exit,
+};
 
+use clap::Parser;
 use lazy_static::lazy_static;
 use serde::Deserialize;
 
+use crate::cli::Cli;
+
 lazy_static! {
-     pub static ref CONFIG: Config = {
-        let mut config_file_path: String = "/var/sdnc/config.toml".to_string();
-
-        let args: Vec<String> = env::args().collect();
-        if args.len() == 3 {
-            config_file_path = args[1].clone();
-        } else if args.len() != 1 {
-            println!("WARNING: Expected 0 or 2 args");
-        }
-
-        println!("Current working directory: {}", env::current_dir().unwrap().to_string_lossy());
+    pub static ref CONFIG: Config = {
+        let args = Cli::parse();
+        // If a path is not specified in the command line arguments, use the current working directory
+        let config_file_path = args.config_path;//.unwrap_or(env::current_dir().unwrap());
 
         // Read the file
         let path = Path::new(&config_file_path);
@@ -29,6 +29,11 @@ lazy_static! {
 
 #[derive(Deserialize)]
 pub struct Config {
+    #[serde(default = "default_static_site_path")]
+    pub static_site_path: PathBuf,
+    #[serde(default = "default_database_url")]
+    pub database_url: String,
+
     pub google: GoogleApiConfig,
     pub discord: DiscordConfig,
 }
@@ -47,4 +52,11 @@ pub struct DiscordConfig {
     pub guild_id: u64,
 
     pub channel_id: u64,
+}
+
+fn default_static_site_path() -> PathBuf {
+    "/var/sdnc/www".into()
+}
+fn default_database_url() -> String {
+    "database.sqlite".into()
 }
