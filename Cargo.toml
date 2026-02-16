@@ -38,5 +38,6 @@ chrono-tz = "0.10.4"
 clap = { version = "4.5.56", features = ["derive"] }
 
 # ORM
+libsqlite3-sys = { version = "0.35", features = ["bundled"] }
 diesel = { version = "2.3.6", features = ["sqlite", "chrono"] }
 diesel_migrations = "2.3.1"

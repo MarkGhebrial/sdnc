@@ -5,7 +5,7 @@ git pull
 cargo build --release
 
 # Apply database migrations
-cargo r -- init-database -c "/var/sdnc/config.toml"
+target/release/sdnc -c "/var/sdnc/config.toml" init-database
 
 echo "Building static site"
 cd www
