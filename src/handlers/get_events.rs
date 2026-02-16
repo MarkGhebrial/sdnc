@@ -43,14 +43,14 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
                 .select(models::Event::as_select())
                 .filter(end_time.le(current_time))
                 .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
-                .order(start_time)
+                .order(start_time.desc())
                 .load(&mut conn)
         } else {
             events
                 .select(models::Event::as_select())
                 .filter(end_time.gt(current_time))
                 .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
-                .order(start_time)
+                .order(start_time.desc())
                 .load(&mut conn)
         };
 
