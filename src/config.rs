@@ -1,5 +1,5 @@
 use std::{
-    env, fs,
+    fs,
     path::{Path, PathBuf},
     process::exit,
 };
@@ -11,10 +11,10 @@ use serde::Deserialize;
 use crate::cli::Cli;
 
 lazy_static! {
-     pub static ref CONFIG: Config = {
+    pub static ref CONFIG: Config = {
         let args = Cli::parse();
         // If a path is not specified in the command line arguments, use the current working directory
-        let config_file_path = args.config_path.unwrap_or(env::current_dir().unwrap());
+        let config_file_path = args.config_path;//.unwrap_or(env::current_dir().unwrap());
 
         // Read the file
         let path = Path::new(&config_file_path);

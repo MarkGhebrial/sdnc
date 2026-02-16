@@ -8,7 +8,9 @@ use diesel::prelude::*;
 use serde::Serialize;
 
 use crate::{
-    AppState, TERA, config::CONFIG, database::{self, models, schema}
+    AppState, TERA,
+    config::CONFIG,
+    database::{self, models, schema},
 };
 
 /// Struct for "event_grid" template data
@@ -38,17 +40,19 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
         let current_time = Utc::now();
 
         // Fetch the events from the database
+        // TODO: These queries are almost exactly the same. Is there a way to reduce
+        // this redundancy?
         let query_result = if get_past_events {
             events
                 .select(models::Event::as_select())
-                .filter(end_time.le(current_time))
+                .filter(end_time.le(current_time)) // "<" for past events
                 .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
                 .order(start_time.desc())
                 .load(&mut conn)
         } else {
             events
                 .select(models::Event::as_select())
-                .filter(end_time.gt(current_time))
+                .filter(end_time.gt(current_time)) // ">" for future events
                 .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
                 .order(start_time.desc())
                 .load(&mut conn)
@@ -64,7 +68,8 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
         .into_iter()
         .map(|e| EventDetails {
             name: e.event_name,
-            start_time: e.start_time
+            start_time: e
+                .start_time
                 .with_timezone(&America::Los_Angeles)
                 .format("%m/%d/%Y %l:%M%P")
                 .to_string(),
@@ -92,6 +97,7 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
 
     let mut context = tera::Context::new();
     context.insert("events", &events);
+    context.insert("show_rsvps", &!get_past_events); // Don't show the number of rsvps when returning the list of past events
 
     // This unwrap should not panic if there are no bugs in the template.
     let body = TERA.render("event_grid", &context).unwrap();

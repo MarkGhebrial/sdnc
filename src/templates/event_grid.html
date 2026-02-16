@@ -1,5 +1,8 @@
 {#
-    Parameter: events: Vec<EventDetails>
+    Parameters:
+        events: Vec<EventDetails>
+        show_rsvps: bool
+
     Used by the get_events handler
 -#}
 
@@ -12,19 +15,27 @@
                         {{ event.name }}
                     </h4>
                     <div class="card-body">
-                        <!-- <h4 class="card-title">{{ event.name }}</h3> -->
                         <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.start_time }}{% if event.end_time %} - {{event.end_time}}{% endif %}</h6>
-                        {% if event.location %}<h6 class="card-subtitle mb-2 text-body-secondary">Location: {{ event.location }}</h6>{% endif %}
-                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.rsvps }} {% if event.rsvps == 1 %}person has RSVP'd{% else %}people have RSVP'd{% endif %}</h6>
                         
+                        {% if event.location -%}
+                            <h6 class="card-subtitle mb-2 text-body-secondary">Location: {{ event.location }}</h6>
+                        {%- endif %}
+                        
+                        {% if show_rsvps -%}
+                            <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.rsvps }} {% if event.rsvps == 1 %}person has RSVP'd{% else %}people have RSVP'd{% endif %}</h6>
+                        {%- endif %}
+                            
                         <p class="card-text">{{ event.description }}</p>
                         
-                        {% if event.discord_link %}<a href="{{ event.discord_link }}" class="btn btn-primary">View in Discord</a>{% endif %}
+                        {% if event.discord_link -%}
+                            <a target="_blank" href="{{ event.discord_link }}" class="btn btn-primary">View in Discord</a>
+                        {%- endif %}
                     </div>
                 </div>
             </div>
         {% endfor %}
     </div>
 {% else %}
+    {# TODO: This message currently shows for both the upcoming events list and the planned events list #}
     <p>There are no events currently planned. </p>
 {% endif %}

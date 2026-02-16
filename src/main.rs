@@ -23,10 +23,16 @@ mod events;
 mod handlers;
 mod recaptcha_verify;
 
-use crate::{cli::CliSubcommands, config::CONFIG, events::synchronize_events};
+use crate::{
+    cli::CliSubcommands, config::CONFIG, database::connect_to_database, events::synchronize_events,
+};
 use cli::Cli;
 use events::GuildEventHandler;
 use recaptcha_verify::*;
+
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 lazy_static! {
     /// Initialize the templating engine
@@ -51,8 +57,15 @@ struct AppState {
 #[tokio::main]
 async fn main() {
     match &CLI_ARGS.subcommand {
-        Some(CliSubcommands::InitDatabase { dir: _ }) => {
-            println!("Not implemented :)"); // TODO: Implement this
+        Some(CliSubcommands::InitDatabase) => {
+            let mut conn = connect_to_database();
+
+            println!("Running migrations...");
+            if let Err(e) = conn.run_pending_migrations(MIGRATIONS) {
+                println!("Failed to apply pending migrations: {:?}", e);
+            } else {
+                println!("Done!");
+            };
         }
         None => start_server().await,
     };

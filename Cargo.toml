@@ -39,3 +39,4 @@ clap = { version = "4.5.56", features = ["derive"] }
 
 # ORM
 diesel = { version = "2.3.6", features = ["sqlite", "chrono"] }
+diesel_migrations = "2.3.1"

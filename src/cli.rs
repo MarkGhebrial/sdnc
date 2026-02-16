@@ -6,7 +6,7 @@ use clap::{Parser, Subcommand};
 #[command(version, about, long_about = None)]
 pub struct Cli {
     #[arg(short = 'c', long, value_name = "FILE")]
-    pub config_path: Option<PathBuf>,
+    pub config_path: PathBuf,
 
     // #[arg(short = 's', long, value_name = "DIR")]
     // pub static_site_path: Option<PathBuf>,
@@ -19,5 +19,5 @@ pub struct Cli {
 
 #[derive(Subcommand)]
 pub enum CliSubcommands {
-    InitDatabase { dir: Option<PathBuf> },
+    InitDatabase,
 }
