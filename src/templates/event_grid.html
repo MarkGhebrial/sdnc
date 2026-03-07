@@ -14,8 +14,19 @@
                     <h4 class="card-header">
                         {{ event.name }}
                     </h4>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Time:</b> {{ event.start_time }}{% if event.end_time %} - {{event.end_time}}{% endif %}</li>
+                        
+                        {% if event.location -%}
+                            <li class="list-group-item"><b>Location:</b> {{ event.location }}</li>
+                        {%- endif %}
+
+                        {% if show_rsvps -%}
+                            <li class="list-group-item">{{ event.rsvps }} {% if event.rsvps == 1 %}person has RSVP'd{% else %}people have RSVP'd{% endif %}</li>
+                        {%- endif %}
+                    </ul>
                     <div class="card-body">
-                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.start_time }}{% if event.end_time %} - {{event.end_time}}{% endif %}</h6>
+                        <!-- <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.start_time }}{% if event.end_time %} - {{event.end_time}}{% endif %}</h6>
                         
                         {% if event.location -%}
                             <h6 class="card-subtitle mb-2 text-body-secondary">Location: {{ event.location }}</h6>
@@ -23,13 +34,25 @@
                         
                         {% if show_rsvps -%}
                             <h6 class="card-subtitle mb-2 text-body-secondary">{{ event.rsvps }} {% if event.rsvps == 1 %}person has RSVP'd{% else %}people have RSVP'd{% endif %}</h6>
+                        {%- endif %} -->
+                        
+                        {% if event.description -%}
+                            <p class="card-text">{{ event.description }}</p>
                         {%- endif %}
-                            
-                        <p class="card-text">{{ event.description }}</p>
                         
                         {% if event.discord_link -%}
-                            <a target="_blank" href="{{ event.discord_link }}" class="btn btn-primary">View in Discord</a>
+                            <a target="_blank" href="{{ event.discord_link }}" class="text-body-secondary">View in Discord</a>
                         {%- endif %}
+
+                        <p>Test</p>
+
+                            <p>Second paragraph</p>
+
+                            <h2>Do headers work?</h2>
+
+                            <hr>
+
+                            <p>More description</p>
                     </div>
                 </div>
             </div>
