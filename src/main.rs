@@ -85,11 +85,13 @@ async fn start_server() {
     // Fetch the events from Discord and make sure the database is up to date
     let h = Arc::clone(&discord_client.http);
     tokio::spawn(async move {
-        println!("Synchronizing events");
-        // TODO: Log the database operations this triggers, if any
-        synchronize_events(h).await;
+        loop {
+            println!("Synchronizing events");
+            // TODO: Log the database operations this triggers, if any
+            synchronize_events(Arc::clone(&h)).await;
 
-        tokio::time::sleep(Duration::from_mins(20)).await;
+            tokio::time::sleep(Duration::from_mins(30)).await;
+        }
     });
 
     // Start the discord client in a new tokio worker so we don't block the main thread.
