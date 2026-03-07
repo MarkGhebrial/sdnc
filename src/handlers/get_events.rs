@@ -54,7 +54,7 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
                 .select(models::Event::as_select())
                 .filter(end_time.gt(current_time)) // ">" for future events
                 .filter(guild_id.eq(CONFIG.discord.guild_id as f64))
-                .order(start_time.desc())
+                .order(start_time.asc())
                 .load(&mut conn)
         };
 
@@ -91,9 +91,6 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
             },
         })
         .collect();
-
-    // Uncomment this to return Json instead
-    // axum::Json(events)
 
     let mut context = tera::Context::new();
     context.insert("events", &events);
