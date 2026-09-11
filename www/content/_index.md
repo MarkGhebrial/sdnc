@@ -8,7 +8,7 @@ San Diego Nerf Club is a small group of nerf enthusiasts spread throughout South
 California. We typically host one or two public nerf games per month.
 
 You can [view our current event schedule](/events). For more information about
-the club and our events, [join our Discord server](/join).
+the club and our events, [join our Discord server](/discord).
 
 # Venues
 
@@ -29,7 +29,7 @@ Below is a list of the places we host games:
 
 # Social Media
 
-We are most active on [our Discord server](/join).
+We are most active on [our Discord server](/discord).
 
 [Our Instagram](https://www.instagram.com/sandiego.nerfclub) sees occasional 
 updates, but is not the best way to stay up to date with the club.
