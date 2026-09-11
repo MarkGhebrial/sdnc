@@ -13,8 +13,6 @@ the club and our events, [join our Discord server](/discord).
 # Venues
 
 Below is a list of the places we host games:
-- **Modern Airsoft** is an indoors cqb airsoft arena in Oceanside. We typically play there once
-  a month on Thursday evenings. Modern airsoft games have a 160 fps cap.
 - **San Diego Airsoft Arena** is a new cqb airsoft arena in Parkway Plaza Mall in
   El Cajon. Games at this venue are played at 160 fps.
 - **"The Church"** is a Mormon church in Santee whose gym we borrow for small competitive
@@ -25,7 +23,6 @@ Below is a list of the places we host games:
   Jungle Island games have a 220 fps cap.
 - **Huntington Beach Sports Complex** has outdoor fields with artificial turf that
   we occasionally use for larger competitive games.
-
 
 # Social Media
 
