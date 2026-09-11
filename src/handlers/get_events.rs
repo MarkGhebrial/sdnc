@@ -22,12 +22,6 @@ pub struct EventDetails {
     description: Option<String>,
     location: Option<String>,
     rsvps: i32,
-
-    /// The discord URL for the event. Should look like "https://discord.com/events/1224949123141210173/1423060568952017120".
-    ///
-    /// This entry is None for events that are no longer on the discord server (i.e
-    /// events that are in the past.)
-    discord_link: Option<String>,
 }
 
 // TODO: This function needs some cleanup
@@ -81,14 +75,6 @@ async fn event_helper(get_past_events: bool) -> impl IntoResponse {
             description: e.event_description,
             location: e.event_location,
             rsvps: e.rsvps,
-            discord_link: if !get_past_events {
-                Some(format!(
-                    "https://discord.com/events/{}/{}",
-                    e.guild_id, e.event_id
-                ))
-            } else {
-                None
-            },
         })
         .collect();
 
