@@ -8,6 +8,20 @@
 
     {# Bootstrap css #}
     <link href="/styles.css" rel="stylesheet">
+
+    {# Opengraph tags #}
+    <meta property="og:title" content="{% if page.title %}{{ config.extra.short_title }} | {{ page.title }}{% else %}{{ config.title }}{% endif %}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/apple-touch-icon.png">
+    <meta property="og:image:alt" content="The SDNC logo">
+    {# <meta property="og:url" content="{{}}"> #}
+    {% if page.description %}
+      <meta property="og:description" content="{{ page.description }}">
+    {% endif %}
+    {% if section.description %}
+      <meta property="og:description" content="{{ section.description }}">
+    {% endif %}
+
     
     {# Bootstrap javascript #}
     <script src="/bootstrap/js/bootstrap.js"></script>

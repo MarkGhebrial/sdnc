@@ -1,5 +1,6 @@
 +++
 template = "index.html"
+description = "About the San Diego Nerf Club"
 +++
 
 # About Us

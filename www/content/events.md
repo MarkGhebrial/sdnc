@@ -1,6 +1,7 @@
 +++
 template = "index.html"
 title = "Events"
+description = "Upcoming and previous events hosted by the San Diego Nerf Club"
 +++
 
 # Upcoming events
