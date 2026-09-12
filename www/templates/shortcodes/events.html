@@ -8,9 +8,9 @@
         $.ajax({
             url: "/api/get_events",
             success: function( result ) {
-                // Replace the "event list" element with the result of the query
                 $( "div.loading" ).hide();
-
+                
+                // Replace the "event list" element with the result of the query
                 document.getElementById("event-list").innerHTML = result;
                 console.log("AJAX request completed");
             }
@@ -19,9 +19,7 @@
         $.ajax({
             url: "/api/get_previous_events",
             success: function( result ) {
-                // Replace the "event list" element with the result of the query
-                $( "div.loading" ).hide();
-
+                // Replace the "previous event list" element with the result of the query
                 document.getElementById("previous-event-list").innerHTML = result
                 console.log("AJAX request completed");
             }
