@@ -1,6 +1,7 @@
 +++
 template = "index.html"
 title = "Discord Server"
+description = "Join the San Diego Nerf Club Discord server"
 +++
 
 # SDNC Discord Server

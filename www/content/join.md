@@ -1,7 +1,7 @@
 +++
 template = "index.html"
 title = "Join"
-description = "San Diego Nerf Club Discord server invite page."
+description = "Join the San Diego Nerf Club"
 +++
 
 This page should immediately redirect to /discord
