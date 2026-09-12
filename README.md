@@ -15,7 +15,7 @@ When updating the deployment, run `bash update.sh`
 To run the server without installing it:
 ```bash
 cd www
-zola build
+zola build # must be version 0.22 or earlier
 cd ..
 cp example_config.toml config.toml
 
